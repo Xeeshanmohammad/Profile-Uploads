@@ -1,30 +1,60 @@
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const PostSchema = new Schema(
-  {
-    userId: { type: Schema.Types.ObjectId, ref: 'User' },
+const PostSchema = new Schema({
+  
+  post: [
+    {
+      text: { type: String, trim:true, required: true },
 
-    rePostsNum: { type: Number, default: 0 },
+      images: [{ type: String }],
+    },
+  ],
+  
+  followers: [
+    {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
 
-   post:[{
-    text:{ type:String, required: true },
-
-    images:[{type:String}]
-   }], 
-
-    creaetd: Date,
-    updated: Date
+  blocked: [
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+  
+  comments: {
+    type: String,
   },
-)
+  
+  likes: [
+    {
+      userId: { type: Schema.Types.ObjectId, ref: "User" },
+      
+    },
+  ],
 
-PostSchema.pre('save', function (next) {
-    if( this.isNew )
-      this.created = new Date();
-
-    this.updated = new Date();
-
-    next();
+  userId: { type: Schema.Types.ObjectId, ref: "User" },
+  
+  creaetd: Date,
+  updated: Date,
 });
 
-module.exports = Post = mongoose.model('Post', PostSchema);
+
+PostSchema.pre('remove', async function (next) {
+  await this.model('User').deleteMany({ post: this._id });
+});
+
+
+module.exports = Post = mongoose.model("Post", PostSchema);

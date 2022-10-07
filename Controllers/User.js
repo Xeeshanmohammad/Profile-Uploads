@@ -6,7 +6,6 @@ const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
 const checkAuth = require('../Middleware/Authentication')
 
-
 router.post("/register", async (req, res) => {
   try {
     const existingUser = await User.findOne({ 'email': req.body.email });
